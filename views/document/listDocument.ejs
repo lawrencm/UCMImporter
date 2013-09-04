@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html ng-app="UCMDocument">
+<head>
+    <title>Bootstrap 101 Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+
+    <script type="text/javascript"
+            src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular.min.js"></script>
+    <script type="text/javascript"
+            src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular-animate.min.js"></script>
+
+
+    <link href="/styles/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="/styles/bootstrap-glyphicons.css" rel="stylesheet" media="screen">
+
+    <style type="text/css">
+
+        .my-fluid-container {
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    </style>
+
+</head>
+<body ng-controller="documentController">
+
+<!-- Modal -->
+<div class="modal fade" id="manifestModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add to a manifest</h4>
+            </div>
+            <div class="modal-body">
+
+                <select ng-model="selectedManifest"
+                        required
+                        ng-options="manifest.id as manifest.name for manifest in manifests">
+                </select>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" ng-click="addToManifest()" data-dismiss="modal">Save
+                    changes
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Metadata for : {{activeDoc.id}} </h4>
+            </div>
+            <div class="modal-body">
+
+
+                <table class="table">
+                    <tr ng-repeat="key in adKeys()">
+                        <td>{{key}}</td>
+                        <td ng-model="activeDoc.metadata[key]">{{activeDoc.metadata[key]}}</td>
+                    </tr>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="closeEditForm()" data-dismiss="modal">
+                    Close
+                </button>
+                <!--<button type="button" class="btn btn-primary" ng-click="setEditReq()" data-dismiss="modal">Save-->
+                <!--changes-->
+                <!--</button>-->
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<!--<pre>-->
+
+<!--{{ selectedItems | json }}-->
+
+<!--</pre>-->
+
+<div class="my-fluid-container">
+    <h3 ucm-breadcrumbs><a ng-repeat="node in pathObj " ng-click="loadNewDirectory(node.loc)"> / {{ node.label}}</a>
+    </h3>
+
+    <div class="col-lg-10">
+
+
+        <div class="msgs" ng-repeat="msg in messages">
+
+            <div ng-if="msg.action=='update'" class="alert alert-success alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <strong>Success</strong> {{msg.msg}}
+            </div>
+        </div>
+
+
+        <div ng-if="msg.action=='error'" class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>Error</strong> {{msg.msg}}
+        </div>
+
+
+        <span ng-if="docs.length <= 0"><img src="/images/301.gif" style="width:16px;height:16px"> Loading Files</span>
+
+
+        <table class="table">
+
+            <thead>
+            <tr>
+                <th>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-small btn-default dropdown-toggle" data-toggle="dropdown">
+                            Action <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#" ng-click=selectAllDocs()>Select All</a></li>
+                            <li><a href="#" ng-click=deselectAllDocs()>De-select All</a></li>
+
+                            <li class="divider" ng-if="selectedItems.length > 0"></li>
+
+                            <li><a href="#" ng-if="selectedItems.length > 0" ng-click="displayManifestModal()">Add to
+                                manifest</a></li>
+                            <li><a href="#" ng-if="selectedItems.length > 0">Something else here</a></li>
+                            <li><a href="#" ng-if="selectedItems.length > 0">Separated link</a></li>
+
+                        </ul>
+                    </div>
+                </th>
+                <th ng-click="sortOn('fileName','string')">File Name</th>
+                <th>Created</th>
+                <th>Modified</th>
+                <th nowrap>File Size</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            <tr ng-repeat="doc in docs" ng-dblclick="viewMetadata(doc.id)">
+
+                <td>
+
+                    <input type="checkbox"
+                           ng-model="doc.selected" ng-change="updateSelectedItems(doc)">&nbsp;
+                    <span ng-if="!doc.isFile" class="glyphicon glyphicon-folder-open"></span>
+                    <span ng-if="doc.isFile" class="glyphicon glyphicon-file"></span>
+                </td>
+
+
+                <td ng-if="!doc.isFile">
+                    <a ng-click="loadNewDirectory(doc.filePath)">{{doc.fileName}}</a>
+                </td>
+
+                <td ng-if="doc.isFile">
+                    {{doc.fileName}}
+                </td>
+
+                <td nowrap>{{doc.stats.ctime | date:'medium'}}</td>
+                <td nowrap>{{doc.stats.mtime | date:'medium'}}</td>
+                <td nowrap>{{doc.stats.size | fileSize}}</td>
+                <td nowrap>
+                    <span ng-if="doc.metadata" class="label label-success">Metadata</span>
+                    <span ng-if="doc.manifest > 0" class="label label-info">{{getManifestName(doc.manifest)}}</span>
+                <span ng-if="(!doc.metadata && doc.isFile) && (!doc.metadataError && doc.isFile) "><img
+                        src="/images/301.gif" style="width:16px;height:16px"></span>
+                    <span ng-if="doc.metadataError" class="label label-warning">{{doc.metadataError}}</span>
+                </td>
+                <td>
+
+                </td>
+            </tr>
+
+
+            </tbody>
+
+
+        </table>
+
+    </div>
+    <div class="col-lg-2 ">
+        <h4>Quick Edit</h4>
+
+        <form role="form">
+
+            <div class="form-group">
+                <label for="manifest">Manifest</label>
+                <select ng-model="selectedManifest" class="form-control"
+                        required name="manifest" id="manifest"
+                        ng-options="manifest.id as manifest.name for manifest in manifests">
+                </select>
+
+                <label for="mdAuthor">Author</label>
+
+                <select name="mdAuthor" id="mdAuthor" ng-model="mdAuthor" class="form-control"
+                        ng-options="author for author in authors">
+                </select>
+            </div>
+
+    </div>
+
+</div>
+
+
+<!-- JavaScript plugins (requires jQuery) -->
+<script src="/js/jquery.1.10.2.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/js/bootstrap.js"></script>
+<script src="/js/moment.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="js/respond.js"></script>
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>

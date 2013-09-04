@@ -1,0 +1,20 @@
+
+<h1>New Manifest</h1>
+
+<div class="panel panel-default">
+    <!-- Default panel contents -->
+
+    <div class="panel-heading" ng-if="activeManifest.name"  ng-model="activeManifest.name" ng-bind="activeManifest.name" contenteditable></div>
+
+    <div class="panel-body">
+        <p  class="contenteditable" contenteditable ng-model="activeManifest.description"></p>
+    </div>
+</div>
+
+
+
+
+
+<div class="pull-right">
+    <button type="button" class="btn btn-primary"  ng-click="createManifest()">Save</button>
+</div>

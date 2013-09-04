@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html ng-app="UCMManifest">
+<head>
+    <title>Bootstrap 101 Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+
+    <script type="text/javascript"
+            src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular.min.js"></script>
+    <script type="text/javascript"
+            src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular-animate.min.js"></script>
+
+
+    <link href="/css/bootstrap.css" rel="stylesheet" media="screen">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
+    <!--<link href="/css/bootstrap-glyphicons.css" rel="stylesheet" media="screen">-->
+
+    <style type="text/css">
+
+
+
+    </style>
+
+</head>
+<body ng-controller="manifestController">
+
+
+<div class="my-fluid-container">
+
+    <div class="col-lg-12 header">
+
+        <div><a>admin</a>/manifests</div>
+
+    </div>
+
+    <!--<div class="col-lg-1 adminMenuWrapper">-->
+        <!--<div class="list-group adminMenu">-->
+            <!--<a class="list-group-item active">-->
+                <!--<span class="glyphicon glyphicon-book"></span> Manifests-->
+            <!--</a>-->
+            <!--<a class="list-group-item">-->
+                <!--<span class="glyphicon glyphicon-user"></span> Users-->
+            <!--</a>-->
+
+            <!--<a class="list-group-item">-->
+                <!--<span class="glyphicon glyphicon-user"></span> Groups-->
+            <!--</a>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <div class="col-lg-2 manifestMenuWrapper" ucm-manifests>
+            <div class="list-group">
+
+
+                <span class="list-group-item">
+
+                <span  class="dropdown pull-right">
+                    <a data-toggle="dropdown" href="#" class="icon icon-plus" ng-click="createNewForm()"></a>
+
+                    <a data-toggle="dropdown" href="#" class="icon icon-cog"></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="createNewForm()">Add new manifest</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="toggleEditToggle()">Edit Manifest menu</a></li>
+
+                    </ul>
+                </span>
+
+
+
+
+
+                    Manifest
+                </span>
+
+
+
+
+
+
+                <a class="list-group-item"
+                   ng-repeat="manifest in manifests"
+                   ng-class="checkActive(manifest.id)"
+                   ng-click="loadManifest(manifest.id,$event)">
+
+                    <button type="button" ng-if="showEditButton()" class="btn btn-danger pull-right btn-xs"  ng-click="removeManifest(manifest.id)">Delete</button>
+                    <span class="badge pull-right">{{manifest.docs.length}}</span>
+                        <i ng-if="!manifest.name">untitled</i>{{manifest.name}}
+                </a>
+
+                <a class="list-group-item" ng-if="showEditButton()">
+                    <button type="button" ng-if="showEditButton()" class="btn btn-default pull-right btn-xs"  ng-click="toggleEditToggle()">Done</button>
+                    &nbsp
+                </a>
+
+
+
+            </div>
+
+
+    </div>
+
+       <div class="col-lg-10 mainTemplate" ng-include="mainTemplate">
+            <h1>ssss</h1>
+       </div>
+
+    <div class="col-lg-10 mainTemplate" ng-if="!mainTemplate">
+        <h1>Manifests</h1>
+        <p>Select a manifest from the left</p>
+    </div>
+
+
+</div>
+
+
+<!-- JavaScript plugins (requires jQuery) -->
+<script src="/js/jquery.1.10.2.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/js/bootstrap.js"></script>
+<script src="/js/moment.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="js/respond.js"></script>
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>

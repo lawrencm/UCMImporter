@@ -1,0 +1,59 @@
+
+<h1>Edit Manifest</h1>
+
+<div class="panel panel-default">
+    <!-- Default panel contents -->
+
+    <div class="panel-heading" ng-if="activeManifest.name"  ng-model="activeManifest.name" ng-bind="activeManifest.name" contenteditable></div>
+
+    <div class="panel-body">
+        <p  class="contenteditable" contenteditable ng-model="activeManifest.description"></p>
+    </div>
+
+    <!--<pre>-->
+        <!--{{ activeManifest | json }}-->
+    <!--</pre>-->
+
+    <!-- Table -->
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th> </th>
+            <th>File Name</th>
+            <th>Path</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="doc in activeManifest.docs" ucm-doc-info></tr>
+        </tbody>
+    </table>
+
+    <div  class="button-panel-group">
+        <button type="button" class="btn btn-danger btn-sm pull-right"  ng-click="removeManifest()">Delete</button>
+        <button type="button" class="btn btn-primary btn-sm pull-right"  ng-click="updateManifest()">Save</button>
+    </div>
+
+</div>
+
+
+
+
+<div class="panel panel-default">
+    <!-- Default panel contents -->
+
+    <div class="panel-heading" >Manifest Rules</div>
+
+    <div class="panel-body">
+        rules go in here
+    </div>
+
+
+</div>
+
+
+<!--<pre>-->
+    <!--{{ updatedManifestDetail | json}}-->
+<!--</pre>-->
+
+<!--contenteditable strip-br-->
+<!--<pre>    {{manifests | json}}</pre>-->

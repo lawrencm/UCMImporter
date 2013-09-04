@@ -1,0 +1,230 @@
+/*!
+ * Bootstrap v3.0.0
+ *
+ * Copyright 2013 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world by @mdo and @fat.
+ */
+
+// Core variables and mixins
+@import url(http://fonts.googleapis.com/css?family=Montserrat:400,700);
+
+@import "variables";
+@import "mixins";
+
+// Reset
+@import "normalize";
+@import "print";
+
+// Core CSS
+@import "scaffolding";
+@import "type";
+@import "code";
+@import "grid";
+@import "tables";
+@import "forms";
+@import "buttons";
+
+// Components
+@import "component-animations";
+@import "glyphicons";
+@import "dropdowns";
+@import "button-groups";
+@import "input-groups";
+@import "navs";
+@import "navbar";
+@import "breadcrumbs";
+@import "pagination";
+@import "pager";
+@import "labels";
+@import "badges";
+@import "jumbotron";
+@import "thumbnails";
+@import "alerts";
+@import "progress-bars";
+@import "media";
+@import "list-group";
+@import "panels";
+@import "wells";
+@import "close";
+
+// Components w/ JavaScript
+@import "modals";
+@import "tooltip";
+@import "popovers";
+@import "carousel";
+
+// Utility classes
+@import "utilities";
+@import "responsive-utilities";
+
+
+// @adminBodyBgColor: #555;
+// @adminTabColor:#ECEDED;
+// @adminMenuOnColor: #ECEDED;
+// @mainContentColor: #ebe8de;
+
+@adminMenucolor:#292a2f;
+
+html, body,.my-fluid-container {
+	// font-family: 'Montserrat', sans-serif;
+    height: 100%;
+    .adminMenuWrapper{
+    	height: 100%;
+    	min-height: 100%;
+    	// .adminMenu{
+    	// 	width: 100%;
+    	// 	height: 100%;
+    	// 	min-height: 100%;
+    	// }
+    }
+}
+
+body {
+	background-color:#292A2F;
+;
+}
+
+.my-fluid-container{
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.header{
+}
+
+
+// .adminMenuWrapper{
+// 	background:#c8ccd8;
+// 	padding:0px;
+// }
+
+// .adminMenu	{
+// 	background:@adminMenucolor;
+// 	.list-group-item {
+// 		// font-size:@font-size-base*1.2;
+// 		// cursor:pointer;
+// 		// color:white;
+// 		border-color: lighten(@adminMenucolor,10%);
+// 		// .glyphicon{
+// 		// 	width:30px;
+// 		// 	line-height:41px;
+// 		// 	margin-right:10px;
+// 		// 	margin-top:-10px;
+// 		// 	margin-bottom:-10px;		
+// 		// 	border-right: 1px solid #2e2e2e;
+// 		// } 
+// 		&:first-child{
+// 			border-top-right-radius:0px;
+// 			border-top:none;
+// 		};
+// 		&:last-child{
+// 			border-bottom-right-radius:0px;
+// 		}
+
+// 		&:hover,&.active{
+// 			border-right:none;
+// 			background-color:lighten(@adminMenucolor,20%);
+// 		}
+// 	}
+// }
+
+
+
+// .mainTemplate{
+// 	padding-top:40px;
+// }
+
+.manifestMenuWrapper, .mainTemplate{
+	background:#f8f8f8;
+	height: 100%;
+	min-height: 100%;
+}
+.manifestMenuWrapper{
+	background:@adminMenucolor;
+	padding-left:0px;
+	padding-right:0px;
+	.list-group-item {
+		background-color: transparent;
+		color:white;
+		border-color: lighten(@adminMenucolor,15%);	;
+		border-left:none;
+		border-right:none;
+
+		&:first-child{
+			border-top-right-radius:0px;
+			border-top-left-radius:0px;
+		};
+		&:last-child{
+			border-top-right-radius:0px;
+			border-top-left-radius:0px;
+		}
+		&:hover,&.active{
+			border-right:none;
+			background-color:lighten(@adminMenucolor,75%);
+			color:#232323;
+		}
+		.badge{
+			background-color:#457b87;
+		}
+	}
+
+	a.icon{
+		color:@brand-primary;
+		font-size:18px;
+	}
+
+}
+
+
+
+
+
+
+
+.contenteditable{
+	// padding:5px 0 5px 0;
+	// border:1px solid white;
+}
+
+// .contenteditable:hover{
+// 	border:1px dotted #ccc;
+// }
+
+.no-value{
+	color:#ccc !important;
+	font-style:italic;
+}
+
+
+// .ng-dirty{
+// 	color:red !important;
+// }
+
+
+.button-panel-group{
+
+	height:40px;
+	button{
+		margin-top:5px;
+		margin-right:5px;
+	}
+
+}
+
+
+.tab-content{
+	padding-top:10px;
+	border:1px solid @nav-tabs-border-color;
+	margin-top:-1px;
+	border-bottom:0px;
+	.panel{
+		border-radius:0px;
+		border-left:0px;
+		border-right:0px;
+	}
+
+}
