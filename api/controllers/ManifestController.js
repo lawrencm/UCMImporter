@@ -19,6 +19,19 @@ module.exports = {
 
     admin: function(req,res){
         res.view({});
+    },
+    documents_by_manifest:function(req,res){
+
+        console.log(req);
+
+        Document.find()
+            .where({manifest:req.body.manifestid})
+            .exec(function(err, documents) {
+                // Do stuff here
+                res.json({documents:documents});
+            });
+
+
     }
 
 };

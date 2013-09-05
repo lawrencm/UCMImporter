@@ -276,6 +276,20 @@ UCMManifest.controller("manifestController", function ($scope,$http) {
 
     });
 
+UCMManifest.directive("ucmDocumentsByManifest", function factory(){
+   return {
+       templateUrl:'/partials/ucmDocumentsByManifest.html',
+       link: function(scope,elm,attrs){
+           socket.get("/manifest/documents_by_manifest",{manifestid:scope.activeManifest.id}, function(resp){
+               console.log(resp);
+               scope.documents = resp;
+               scope.$apply();
+           })
+//            console.log("hello");
+       }
+   }
+});
+
 UCMManifest.directive("ucmDocInfo", function factory() {
     return {
         template:"<td></td><td>{{document.fileName}}</td><td>{{document.filePath}}</td>",
