@@ -282,7 +282,8 @@ UCMManifest.directive("ucmDocumentsByManifest", function factory(){
        link: function(scope,elm,attrs){
            socket.get("/manifest/documents_by_manifest",{manifestid:scope.activeManifest.id}, function(resp){
                console.log(resp);
-               scope.documents = resp;
+//               scope.activeManifest.docs = resp;
+               scope.activeManifest.docs =  $.extend(true, {}, resp.documents);
                scope.$apply();
            })
 //            console.log("hello");
@@ -292,13 +293,13 @@ UCMManifest.directive("ucmDocumentsByManifest", function factory(){
 
 UCMManifest.directive("ucmDocInfo", function factory() {
     return {
-        template:"<td></td><td>{{document.fileName}}</td><td>{{document.filePath}}</td>",
+        template:"<td></td><td>{{doc.fileName}}</td><td>{{doc.filePath}}</td>",
         link:function(scope,elm,attrs){
 
-            socket.get('/document/' + scope.doc,{},function(resp){
-                scope.document = resp;
-                scope.$apply();
-            });
+//            socket.get('/document/' + scope.doc,{},function(resp){
+//                scope.document = resp;
+//                scope.$apply();
+//            });
         }
     };
 
