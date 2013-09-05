@@ -1,0 +1,10 @@
+  <div class="form-group">
+  	<label for="userName">Password</label>
+  	<select 
+  		ng-model="activeManifest.assigendUser"
+  		class="form-control"
+  		name="userName"
+  		ng-options="user.id as user.email for user in users">
+  		<!-- <option ng-repeat="">{{user | json}}</option> -->
+  	</select>
+  </div>

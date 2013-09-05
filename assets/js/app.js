@@ -21,6 +21,8 @@
         // Listen for Comet messages from Sails
         socket.on('message', function messageReceived(message) {
 
+            console.log(message);
+
             ///////////////////////////////////////////////////////////
             // Replace the following with your own custom logic
             // to run when a new message arrives from the Sails.js
@@ -69,6 +71,42 @@
         window.io
 
     );
+
+var ucmImporter = angular.module("ucmImporter",[]);
+ucmImporter.directive('ucmImporterGlobalNavbar', ['$http', function(){
+    return {
+
+        templateUrl: '/partials/globalNavBar.html',
+        link: function($scope, iElm, iAttrs, controller) {
+            
+        }
+    };
+}]);
+
+ucmImporter.directive('ucmImporterUserSelectList', ['$http', function(){
+    // Runs during compile
+    return {
+        // name: '',
+        // priority: 1,
+        // terminal: true,
+        // scope: {}, // {} = isolate, true = child, false/undefined = no change
+
+        // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
+        // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+        // template: '',
+        templateUrl: '/partials/userSelectList.html',
+        // replace: true,
+        // transclude: true,
+        // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+        link: function($scope, iElm, iAttrs, controller) {
+            socket.get("/user",{},function(resp){
+                $scope.users = resp;
+                $scope.$apply();
+            })           
+        }
+    };
+}]);
+
 
 var InlineEditable = angular.module("InlineEditable",[]);
 InlineEditable.directive('contenteditable', function() {
@@ -127,7 +165,7 @@ var DEFAULT_MANIFEST_TEMPLATE = "/partials/manifestDetail.html";
 
 
 
-var UCMManifest = angular.module("UCMManifest", ['InlineEditable']);
+var UCMManifest = angular.module("UCMManifest", ['InlineEditable','ucmImporter']);
 UCMManifest.controller("manifestController", function ($scope,$http) {
 
 
@@ -144,6 +182,26 @@ UCMManifest.controller("manifestController", function ($scope,$http) {
 //        }
 //
 //    })
+
+    /**
+     * initialize the sockets
+     */
+    
+    socket.on('connect', function socketConnected() {
+
+        // Listen for Comet messages from Sails
+        socket.on('message', function messageReceived(msg) {
+            switch(msg['model'],msg['verb']){
+                case ('manifest','update'):
+                    console.log("Should Reload Manifests");
+                    $scope.$broadcast('reloadmanifests');
+                    break;
+                default:
+                    break;
+            }
+        });
+    });
+
 
     $scope.toggleEditToggle = function(){
         if ($scope.toggleEdit){
@@ -183,9 +241,6 @@ UCMManifest.controller("manifestController", function ($scope,$http) {
 
     $scope.loadManifest = function(id){
         $scope.mainTemplate = DEFAULT_MANIFEST_TEMPLATE;
-
-
-
         socket.get('/manifest',{id:id},function(resp){
             $scope.activeManifest = $.extend(true, {}, resp);
             $scope.$apply();
@@ -240,49 +295,54 @@ UCMManifest.controller("manifestController", function ($scope,$http) {
 
     });
 
+/**
+ * gets the documents tagged as belnging to this manifest
+ */
 UCMManifest.directive("ucmDocumentsByManifest", function factory(){
    return {
        templateUrl:'/partials/ucmDocumentsByManifest.html',
        link: function(scope,elm,attrs){
-
-
            function documentByManifest(){
-
-               console.log(scope.activeManifest);
-
                socket.get("/manifest/documents_by_manifest",{manifestid:scope.activeManifest.id}, function(resp){
-                   console.log(resp);
-//                  scope.activeManifest.docs = resp;
                    scope.activeManifest.docs = resp.documents;
                    scope.$apply();
-               })
+               });
            }
 
-           documentByManifest();
-
-
+           // lsite to this broadcast from a socket reposne
            scope.$on('loadingmanifest',function(o,n){
                console.log('loadingmanifest');
                documentByManifest();
-           })
-
-//            console.log("hello");
+           });
+           // inti the first call
+           documentByManifest();
        }
-   }
+   };
+});
+
+
+/**
+ * displays a badge with the number of docs in the manifest
+ */
+UCMManifest.directive('ucmManifestDocumentCount', function factory(){
+    return {
+        template: '<span class="badge pull-right">{{docLength}}</span>',
+        replace: true,
+        link: function($scope, iElm, iAttrs) {
+            socket.get('/manifest/documents_by_manifest',{manifestid:$scope.manifest.id},function(resp){
+                $scope.docLength = resp.documents.length;
+                $scope.$apply();
+            });
+        }
+    };
 });
 
 UCMManifest.directive("ucmDocInfo", function factory() {
     return {
         template:"<td></td><td>{{doc.fileName}}</td><td>{{doc.filePath}}</td>",
-        link:function(scope,elm,attrs){
-
-//            socket.get('/document/' + scope.doc,{},function(resp){
-//                scope.document = resp;
-//                scope.$apply();
-//            });
+        link:function($scope,elm,attrs){
         }
     };
-
 });
 
 
@@ -290,21 +350,18 @@ UCMManifest.directive("ucmDocInfo", function factory() {
 
 UCMManifest.directive("ucmManifests", function factory() {
     var ucmManifestsDefinitionObject = {
-        link:function(scope,$rootScope){
-
-//            scope.$on('mainfestsUpdate', function(){
-//                console.log("sdsdsdsd");
-//            });
+        link:function($scope,$rootScope){
 
             function reloadManifests(){
+                console.log("Relaoding Manifests");
                 socket.get('/manifest',{},function(resp){
-                    scope.manifests = resp;
-                    scope.$apply();
+                    $scope.manifests = resp;
+                    $scope.$apply();
                 })
             };
 
-            scope.$watch('updateManifestCount',function(o,n){
-                console.log("updating manifests");
+            $scope.$on('reloadmanifests',function(o,n){
+                console.log("caught broadcast to reloading manifests");
                 reloadManifests();
             });
 //
@@ -354,7 +411,11 @@ var UCMDocument = angular.module("UCMDocument", []);
 
 UCMDocument.controller("documentController", function ($scope) {
 
-    $scope.baseUrl = "/Users/lawrencm/Desktop/test/";
+    // $scope.baseUrl = "/Users/lawrencm/Desktop/test/";
+    $scope.baseUrl = "C:/Users/mlawrence/Desktop/";
+
+
+
     $scope.docs = [];
     $scope.sortOrder = "fileName";
     $scope.messages = [];
@@ -516,7 +577,14 @@ UCMDocument.controller("documentController", function ($scope) {
                 $scope.manifests = resp;
                 $scope.$apply();
             });
-        }()
+        };
+
+        $scope.$on('reloadManifests',function(){
+            $scope.loadingManifests();
+        });
+
+        $scope.loadingManifests();
+
 //        $scope.loadManifests();
 
         /**

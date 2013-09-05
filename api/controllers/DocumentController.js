@@ -7,6 +7,9 @@
 
 var fs = require('fs');
 var exec = require('child_process').exec;
+// var x = require('ucmImporter');
+// 
+// 
 
 module.exports = {
 
@@ -15,6 +18,7 @@ module.exports = {
      res.send('hello world!');
      }
      */
+
 
 
 
@@ -39,9 +43,9 @@ module.exports = {
          */
 
 //        console.log(ROOT_DIR.slice(0,1));
-        if (ROOT_DIR.slice(0,1) != "/") {
-            ROOT_DIR = "/" + ROOT_DIR;
-        }
+        // if (ROOT_DIR.slice(0,1) != "c://") {
+        //     ROOT_DIR = "c://" + ROOT_DIR;
+        // }
 
         console.log(ROOT_DIR);
         console.log(typeof ROOT_DIR);
@@ -93,10 +97,13 @@ module.exports = {
                                                 socket_msg.action = "updated";
                                                 Document.publish(req, socket_msg);
 
-                                                var child = exec('/usr/bin/java -jar /Users/lawrencm/Downloads/tika-app-1.4.jar -v -j "' + udoc[0].filePath + '"', function (error, stdout, stderr) {
+                                                var st = sails.config.ucmImporter.JAVA_HOME + ' -jar ' + sails.config.ucmImporter.APACHE_TIKA_HOME + ' -v -j "' + udoc[0].filePath + '"';
+                                                console.log(st);
+
+                                                var child = exec(sails.config.ucmImporter.JAVA_HOME + ' -jar ' + sails.config.ucmImporter.APACHE_TIKA_HOME + ' -v -j "' + udoc[0].filePath + '"', function (error, stdout, stderr) {
 
                                                     if (error) {
-                                                        console.log("could not get metadata for file " + udoc[0].filePath)
+                                                        console.log("could not get metadata for file " + udoc[0].filePath);
 
                                                         Document.update(doc.id, {metadataError: "Error extracting metadata"}, function () {
                                                             socket_msg.action = "metadata";
@@ -133,7 +140,6 @@ module.exports = {
                         });
                     }
                 }
-                ;
             }
 
 
@@ -159,7 +165,7 @@ module.exports = {
 
     },
     getMetadata: function (req, res) {
-        var child = exec('/usr/bin/java -jar /Users/lawrencm/Downloads/tika-app-1.4.jar -v -j "/Users/lawrencm/Downloads/User-Manual-Template.dotx"', function (error, stdout, stderr) {
+        var child = exec(cfg.sails.config.ucmImporter.JAVA_HOME + ' -jar ' + sails.config.ucmImporter.APACHE_TIKA_HOME + ' -v -j "' + udoc[0].filePath + '"', function (error, stdout, stderr) {
             var fileInfo = JSON.parse(stdout);
             console.log(fileInfo);
             res.view(
@@ -168,7 +174,11 @@ module.exports = {
                 }
             );
 
-        })
+        });
+    },
+    test:function(req,res){
+        console.log(sails.config);
+        res.json({});
     }
 };
 
