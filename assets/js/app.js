@@ -174,61 +174,25 @@ UCMManifest.controller("manifestController", function ($scope,$http) {
 
 
     $scope.createManifest = function(){
-
-//
-//        console.log("hello");
-//        console.log($scope.activeManifest);
-
         var newData =$.extend(true, {}, $scope.activeManifest);
-
-
-//        socket.post('/manifest',{name:'xxx'},function(r){
-//            console.log(r);
-//        });
-
-
         $http.post('/manifest', newData).success(function(data, status, headers, config){
-            console.log(data);
             $scope.updateManifestCount = $scope.updateManifestCount + 1;
-
-
         });
-
-//        socket.post('/document',{name:'test'}, function(a){
-////
-//            console.log(a);
-////
-//////            console.log(resp);
-//////            $scope.activeManifest = {};
-//////            $scope.mainTemplate = "/partials/manifestDetail.html";
-//            $scope.updateManifestCount = $scope.updateManifestCount + 1;
-//////
-//////            console.log($scope.updateManifestCount);
-//////
-////////            $scope.$broadcast("mainfestsUpdate", {})
-//////
-////////            $scope.$apply( TEST );
-//////
-////////            $scope.manifests.push(resp);
-//////            $scope.apply();
-//        });
-
     };
 
 
     $scope.loadManifest = function(id){
         $scope.mainTemplate = DEFAULT_MANIFEST_TEMPLATE;
 
+
+
         socket.get('/manifest',{id:id},function(resp){
             $scope.activeManifest = $.extend(true, {}, resp);
             $scope.$apply();
+            $scope.$broadcast('loadingmanifest');
         });
     }
 
-
-//    $scope.$watch('activeManifest.description',function(o,n){
-//        console.log(o,n);
-//    });
 
     $scope.updateManifest = function(){
 
@@ -280,12 +244,28 @@ UCMManifest.directive("ucmDocumentsByManifest", function factory(){
    return {
        templateUrl:'/partials/ucmDocumentsByManifest.html',
        link: function(scope,elm,attrs){
-           socket.get("/manifest/documents_by_manifest",{manifestid:scope.activeManifest.id}, function(resp){
-               console.log(resp);
-//               scope.activeManifest.docs = resp;
-               scope.activeManifest.docs =  $.extend(true, {}, resp.documents);
-               scope.$apply();
+
+
+           function documentByManifest(){
+
+               console.log(scope.activeManifest);
+
+               socket.get("/manifest/documents_by_manifest",{manifestid:scope.activeManifest.id}, function(resp){
+                   console.log(resp);
+//                  scope.activeManifest.docs = resp;
+                   scope.activeManifest.docs = resp.documents;
+                   scope.$apply();
+               })
+           }
+
+           documentByManifest();
+
+
+           scope.$on('loadingmanifest',function(o,n){
+               console.log('loadingmanifest');
+               documentByManifest();
            })
+
 //            console.log("hello");
        }
    }
