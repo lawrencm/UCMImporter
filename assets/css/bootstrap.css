@@ -5911,6 +5911,7 @@ html,
 body,
 .my-fluid-container {
   height: 100%;
+  min-height: 100%;
 }
 html .adminMenuWrapper,
 body .adminMenuWrapper,
@@ -5963,6 +5964,10 @@ body {
 .manifestMenuWrapper a.icon {
   color: #428bca;
   font-size: 18px;
+}
+.user-menu {
+  margin-right: 10px;
+  margin-top: 10px;
 }
 .no-value {
   color: #ccc !important;

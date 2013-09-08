@@ -16,7 +16,26 @@ module.exports.adapters = {
 
   // If you leave the adapter config unspecified 
   // in a model definition, 'default' will be used.
-  'default': 'disk',
+//  'default': 'disk',
+    'default': 'mongo',
+
+
+
+    // sails v.0.9.0
+    mongo: {
+        module   : 'sails-mongo',
+        host     : 'localhost',
+        port     : 27017,
+//        user     : 'username',
+//        password : 'password',
+        database : 'sails'
+
+        // OR
+//        module   : 'sails-mongo',
+//        url      : 'mongodb://USER:PASSWORD@HOST:PORT/DB'
+    },
+
+
 
   // In-memory adapter for DEVELOPMENT ONLY
   memory: {

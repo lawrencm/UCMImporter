@@ -11,8 +11,8 @@
             src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular-animate.min.js"></script>
 
 
-    <link href="/styles/bootstrap.css" rel="stylesheet" media="screen">
-    <link href="/styles/bootstrap-glyphicons.css" rel="stylesheet" media="screen">
+            <link href="/css/bootstrap.css" rel="stylesheet" media="screen">
+            <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
     <style type="text/css">
 
@@ -27,7 +27,7 @@
 
 </head>
 <body ng-controller="documentController">
-
+    <div ucm-importer-global-navbar></div>
 <!-- Modal -->
 <div class="modal fade" id="manifestModal">
     <div class="modal-dialog">
@@ -101,6 +101,8 @@
 <!--</pre>-->
 
 <div class="my-fluid-container">
+
+    <div class="mainTemplate">
     <h3 ucm-breadcrumbs><a ng-repeat="node in pathObj " ng-click="loadNewDirectory(node.loc)"> / {{ node.label}}</a>
     </h3>
 
@@ -202,7 +204,7 @@
         </table>
 
     </div>
-    <div class="col-lg-2 ">
+<!--     <div class="col-lg-2 ">
         <h4>Quick Edit</h4>
 
         <form role="form">
@@ -221,8 +223,8 @@
                 </select>
             </div>
 
+    </div> -->
     </div>
-
 </div>
 
 

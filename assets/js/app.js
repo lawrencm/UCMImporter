@@ -72,10 +72,13 @@
 
     );
 
+//module for generic components
 var ucmImporter = angular.module("ucmImporter",[]);
+/**
+ * Global nabvigation bar across the top
+ */
 ucmImporter.directive('ucmImporterGlobalNavbar', ['$http', function(){
     return {
-
         templateUrl: '/partials/globalNavBar.html',
         link: function($scope, iElm, iAttrs, controller) {
             
@@ -83,14 +86,17 @@ ucmImporter.directive('ucmImporterGlobalNavbar', ['$http', function(){
     };
 }]);
 
+
+
 ucmImporter.directive('ucmImporterUserSelectList', ['$http', function(){
     // Runs during compile
     return {
-        // name: '',
-        // priority: 1,
-        // terminal: true,
-        // scope: {}, // {} = isolate, true = child, false/undefined = no change
-
+        controller: function($scope) {
+            $scope.assignUser = function(user){
+                $scope.activeManifest.assignedUser = user.id;
+                $scope.activeManifestUser = user;
+            };
+        },
         // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
         // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
         // template: '',
@@ -99,6 +105,13 @@ ucmImporter.directive('ucmImporterUserSelectList', ['$http', function(){
         // transclude: true,
         // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
         link: function($scope, iElm, iAttrs, controller) {
+
+            // $scope.$watch('activeManifest.assignedUser',function(o,n){
+            //     if (o != n){
+            //         // iElm.html("hello world");
+            //     }
+            // });
+
             socket.get("/user",{},function(resp){
                 $scope.users = resp;
                 $scope.$apply();
@@ -172,16 +185,7 @@ UCMManifest.controller("manifestController", function ($scope,$http) {
     $scope.activeManifest = {};
     $scope.updateManifestCount = 1;
     $scope.mainTemplate;
-
     $scope.toggleEdit = false;
-//    $scope.$watch('activeManifest.name',function(o,n){
-//        console.log("changed:" + o,n);
-//        if (!n){
-//            console.log("should chnage")
-//            $scope.activeManifest['name']=o;
-//        }
-//
-//    })
 
     /**
      * initialize the sockets
@@ -203,22 +207,7 @@ UCMManifest.controller("manifestController", function ($scope,$http) {
     });
 
 
-    $scope.toggleEditToggle = function(){
-        if ($scope.toggleEdit){
-            $scope.toggleEdit = false;
-        }else{
-            $scope.toggleEdit = true;
-        }
-    }
 
-
-    $scope.showEditButton = function(){
-        if ($scope.toggleEdit){
-            return true;
-        }else{
-            return false;
-        }
-    }
 
 
     $scope.createNewForm = function(){
@@ -239,14 +228,37 @@ UCMManifest.controller("manifestController", function ($scope,$http) {
     };
 
 
-    $scope.loadManifest = function(id){
-        $scope.mainTemplate = DEFAULT_MANIFEST_TEMPLATE;
-        socket.get('/manifest',{id:id},function(resp){
-            $scope.activeManifest = $.extend(true, {}, resp);
-            $scope.$apply();
-            $scope.$broadcast('loadingmanifest');
-        });
-    }
+
+    // $scope.$watchCollection('activeManifest',function(o,n){
+    //     console.log("am changed");
+    //     console.log(o);
+    //     console.log(n);
+    //     console.log(JSON.stringify(o) === JSON.stringify(n) );
+    // });
+
+
+    // $scope.loadManifest = function(id){
+    //     $scope.mainTemplate = DEFAULT_MANIFEST_TEMPLATE;
+    //     socket.get('/manifest',{id:id},function(resp){
+
+    //         //console.log(resp);
+
+    //         $scope.activeManifest = $.extend(true, {}, resp);
+
+    //         if($scope.activeManifest.assignedUser){
+    //             socket.get("/user",{id:$scope.activeManifest.assignedUser},function(resp){
+    //                 $scope.activeManifestUser = resp;
+    //                 $scope.$apply();
+    //             });
+    //         }else{
+    //             $scope.activeManifestUser = null;
+    //             $scope.$apply();    
+    //         }
+
+    //         $scope.$apply();
+    //         $scope.$broadcast('loadingmanifest');
+    //     });
+    // }
 
 
     $scope.updateManifest = function(){
@@ -267,6 +279,7 @@ UCMManifest.controller("manifestController", function ($scope,$http) {
     };
 
 
+
     $scope.removeManifest = function(aid){
          if(!aid){
              var aid = $scope.activeManifest.id;
@@ -285,15 +298,143 @@ UCMManifest.controller("manifestController", function ($scope,$http) {
         })
     };
 
-    $scope.checkActive = function(id){
-        if($scope.activeManifest){
-            return (id==$scope.activeManifest.id)?"active":"";
-        }else{
-            return "";
-        };
+    // 
+
+    $scope.testDirty = function(obj){
+        console.log(obj.$dirty);
+        return true;
+    }
+
+    $scope.arrayFromString = function(val){
+        return val.split(",");
     };
 
+    $scope.singleValue = function(valueString){
+        // console.log(valueString);
+
+        if (valueString.split(",").length > 1){
+            return false;
+        }else{
+            return true;    
+        }
+        return true;
+    }
+
     });
+
+/**
+ * manages manifests for the entire scope
+ * @return {directiveDefinitionObject}
+ */
+UCMManifest.directive('ucmManifestManager', ['$http', function(){
+    return {
+        name: 'ucmManifestManager',
+        // priority: 1,
+        // terminal: true,
+        // scope: {}, // {} = isolate, true = child, false/undefined = no change
+        controller: function($scope, $element, $attrs) {
+            /**
+             * check active maniscript to set css class
+             * @param  {int} id id of the current maniscript
+             * @return {string}    css class of the element
+             * TODO - change this to use dom manipulation
+             */
+            
+            //ODO - change this to use dom manipulation
+            $scope.checkActive = function(id){
+                    if($scope.activeManifest){
+                        return (id==$scope.activeManifest.id)?"active":"";
+                    }else{
+                        return "";
+                    }
+                };
+
+                $scope.toggleEditToggle = function(){
+                    if ($scope.toggleEdit){
+                        $scope.toggleEdit = false;
+                    }else{
+                        $scope.toggleEdit = true;
+                    }
+                }
+
+
+                $scope.showEditButton = function(){
+                    if ($scope.toggleEdit){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }                
+
+                /**
+                 * Load the selected manifest into the active manifest object
+                 * @param  {int} id id of the manifest to load
+                 * @return {directiveDefinitionObject}   
+                 */
+                $scope.loadManifest = function(id){
+                    
+                    $scope.mainTemplate = DEFAULT_MANIFEST_TEMPLATE;
+
+                    socket.get('/manifest',{id:id},function(resp){
+                        //assign to the active manifest
+                        $scope.activeManifest = $.extend(true, {}, resp);
+
+                        // get the assigned user info for the manifest
+                        if($scope.activeManifest.assignedUser){
+                            socket.get("/user",{id:$scope.activeManifest.assignedUser},function(resp){
+                                $scope.activeManifestUser = resp;
+                                $scope.$apply();
+                            });
+                        }else{
+                            $scope.activeManifestUser = null;
+                            $scope.$apply();
+                        }
+
+                        $scope.$apply();
+                        $scope.$broadcast('loadingmanifest');
+                    });
+                };
+
+
+
+
+        },
+        // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
+        // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+        // template: '',
+        templateUrl: '/partials/ucm-manifest-manager.html',
+        // replace: true,
+        // transclude: true,
+        // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+        link: function($scope, iElm, iAttrs, controller) {
+             /*
+             get all manifests via socket
+              */
+             function reloadManifests(){
+                socket.get('/manifest',{},function(resp){
+
+console.log(resp);
+
+                    $scope.manifests = resp;
+                    $scope.$apply();
+                });
+
+            }
+            /**
+             * List for a broadcast to reload manifests
+             */
+            $scope.$on('reloadmanifests',function(){
+                reloadManifests();
+            });
+            //initial call to load manifests        
+            reloadManifests();
+
+ 
+
+        }
+    };
+}]);
+
 
 /**
  * gets the documents tagged as belnging to this manifest
@@ -302,23 +443,211 @@ UCMManifest.directive("ucmDocumentsByManifest", function factory(){
    return {
        templateUrl:'/partials/ucmDocumentsByManifest.html',
        link: function(scope,elm,attrs){
-           function documentByManifest(){
-               socket.get("/manifest/documents_by_manifest",{manifestid:scope.activeManifest.id}, function(resp){
-                   scope.activeManifest.docs = resp.documents;
-                   scope.$apply();
-               });
-           }
+            console.log("called3");
+           // function documentByManifest(){
+           //     socket.get("/manifest/documents_by_manifest",{manifestid:scope.activeManifest.id}, function(resp){
+           //         scope.activeManifest.docs = resp.documents;
+           //         scope.$apply();
+           //     });
+           // }
 
-           // lsite to this broadcast from a socket reposne
-           scope.$on('loadingmanifest',function(o,n){
-               console.log('loadingmanifest');
-               documentByManifest();
-           });
-           // inti the first call
-           documentByManifest();
+           // // lsite to this broadcast from a socket reposne
+           // scope.$on('loadingmanifest',function(o,n){
+           //     console.log('loadingmanifest');
+           //     documentByManifest();
+           // });
+           // // inti the first call
+           // documentByManifest();
        }
    };
 });
+
+
+UCMManifest.directive('ucmRuleManager', ['$http', function(){
+    // Runs during compile
+    return {
+        // name: '',
+        // priority: 1,
+        // terminal: true,
+        // scope: {}, // {} = isolate, true = child, false/undefined = no change
+        // cont­rol­ler: function($scope, $element, $attrs, $transclue) {},
+        // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
+        // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+        // template: '',
+        // templateUrl: '',
+        // replace: true,
+        // transclude: true,
+        // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+        link: function($scope, iElm, iAttrs, controller) {
+           
+        }
+    };
+}]);
+
+
+UCMManifest.directive('ucmManifestDocumentManager', ['$http', function(){
+    // Runs during compile
+    return {
+        // name: '',
+        // priority: 1,
+        // terminal: true,
+        // scope: {}, // {} = isolate, true = child, false/undefined = no change
+        // cont­rol­ler: function($scope, $element, $attrs, $transclue) {},
+        controller: function($scope,$element, $attrs){
+            $scope.testCLick = function(doc){
+               console.log(doc);
+            };
+
+
+        },
+        // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
+        // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+        // template: '',
+        // templateUrl: '',
+        // replace: true,
+        // transclude: true,
+        // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+        link: function($scope, iElm, iAttrs, controller) {
+            console.log("calling11")
+
+            $scope.currentDocs = [];
+
+
+            function documentByManifest(){
+
+                $scope.currentDocs = [];
+
+                socket.get("/manifest/documents_by_manifest",{manifestid:$scope.activeManifest.id}, function(resp){
+                    $scope.currentDocs = resp.documents;
+                    for (i in $scope.currentDocs){
+                        //loop over rulles
+                        for (r in $scope.activeManifest.rules){
+
+                            var mid = $scope.activeManifest.rules[r].metadataID;
+                            var val = $scope.activeManifest.rules[r].defaultValue;
+
+                            if (typeof $scope.currentDocs[i].rules[mid] == "undefined"){
+                                $scope.currentDocs[i].rules[mid] =   val;                              
+                            }
+                        }
+                        //
+                    }
+                    $scope.$apply();
+                });
+            }
+
+            // lsite to this broadcast from a socket reposne
+            $scope.$on('loadingmanifest',function(o,n){
+                console.log('loadingmanifest');
+                documentByManifest();
+            });
+            // inti the first call
+            documentByManifest();
+
+            
+        }
+    };
+}]);
+
+
+UCMManifest.directive('ucmAutoSaveDoc', ['$http', function(){
+    // Runs during compile
+    return {
+        // name: '',
+        priority: 0,
+        // terminal: true,
+        // scope: {}, // {} = isolate, true = child, false/undefined = no change
+        // cont­rol­ler: function($scope, $element, $attrs, $transclue) {},
+        // controller: function($scope,$element,attrs,$http){
+        require: '?ngModel',
+        // },
+        // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
+        // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+        // template: '',
+        // templateUrl: '',
+        // replace: true,
+        // transclude: true,
+        // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+        link: function($scope, iElm, iAttrs, ngModel) {
+            var doc = $scope.doc;
+
+            // $scope.$watch(iAttrs['ng-model'],function(o,n){
+            //     console.log("chnaged");
+            //     console.log(o,n);
+            // })
+            //console.log(iAttrs);
+            //
+            function save(){
+                socket.put("/document",doc,function(resp){
+                    console.log(resp);
+                });
+            };
+
+            iElm.on("blur",function(){
+                save();
+            });
+
+            iElm.on("change",function(e){
+                save();
+            });
+            //     //console.log(doc);    
+            //     //console.log(e);
+            //     //
+            //     console.log(e);
+                
+            //     socket.put("/document",doc,function(resp){
+            //         console.log(resp);
+            //     })
+
+            //     // $http('put', "/document", doc, function(status, response){
+            //     //     // success
+            //     //     console.log(response);
+            //     // }, function(status, response){
+            //     //     // error
+            //     //     console.log(response);
+            //     // });
+            // })
+
+            
+            
+        }
+    };
+}]);
+
+UCMManifest.directive('ucmNewRule', ['$http', function(){
+    // Runs during compile
+    return {
+        // name: '',
+        // priority: 1,
+        // terminal: true,
+        // scope: {}, // {} = isolate, true = child, false/undefined = no change
+        controller: function($scope, $element, $attrs) {
+            $scope.addRule = function(){
+                console.log("adding rule");
+                if (!$scope.activeManifest['rules']){
+                    $scope.activeManifest['rules'] = [];
+                }
+                $scope.activeManifest.rules.push($.extend(true, {}, $scope.newrule));
+                $scope.updateManifest();
+            }
+        },
+        // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
+        // restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
+        // template: '',
+        // templateUrl: '',
+        // replace: true,
+        // transclude: true,
+        // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+        link: function($scope, iElm, iAttrs, controller) {
+            $scope.newrule = {
+                metadataID:"enter a new rule metadata id",
+                defaultValue: "enter the default value for the new rule"
+            }
+            
+            
+        }
+    };
+}]);
 
 
 /**
@@ -337,42 +666,17 @@ UCMManifest.directive('ucmManifestDocumentCount', function factory(){
     };
 });
 
-UCMManifest.directive("ucmDocInfo", function factory() {
-    return {
-        template:"<td></td><td>{{doc.fileName}}</td><td>{{doc.filePath}}</td>",
-        link:function($scope,elm,attrs){
-        }
-    };
-});
+// UCMManifest.directive("ucmManifestDocInfo", function factory() {
+//     return {
+//         template:"<td></td><td>{{doc.fileName}}</td><td>{{doc.filePath}}</td>",
+//         link:function($scope,elm,attrs){
+//         }
+//     };
+// });
 
 
 
 
-UCMManifest.directive("ucmManifests", function factory() {
-    var ucmManifestsDefinitionObject = {
-        link:function($scope,$rootScope){
-
-            function reloadManifests(){
-                console.log("Relaoding Manifests");
-                socket.get('/manifest',{},function(resp){
-                    $scope.manifests = resp;
-                    $scope.$apply();
-                })
-            };
-
-            $scope.$on('reloadmanifests',function(o,n){
-                console.log("caught broadcast to reloading manifests");
-                reloadManifests();
-            });
-//
-            reloadManifests();
-
-
-
-        }
-    };
-    return ucmManifestsDefinitionObject;
-});
 
 
 UCMManifest.directive('test', function () {
@@ -407,12 +711,12 @@ UCMManifest.directive('test', function () {
 
 
 
-var UCMDocument = angular.module("UCMDocument", []);
+var UCMDocument = angular.module("UCMDocument", ['InlineEditable','ucmImporter']);
 
 UCMDocument.controller("documentController", function ($scope) {
 
-    // $scope.baseUrl = "/Users/lawrencm/Desktop/test/";
-    $scope.baseUrl = "C:/Users/mlawrence/Desktop/";
+    $scope.baseUrl = "/Users/lawrencm/Desktop/test/";
+    // $scope.baseUrl = "C:/Users/mlawrence/Desktop/";
 
 
 
@@ -580,10 +884,10 @@ UCMDocument.controller("documentController", function ($scope) {
         };
 
         $scope.$on('reloadManifests',function(){
-            $scope.loadingManifests();
+            $scope.loadManifests();
         });
 
-        $scope.loadingManifests();
+        $scope.loadManifests();
 
 //        $scope.loadManifests();
 
@@ -739,6 +1043,7 @@ UCMDocument.directive("ucmBreadcrumbs", function factory() {
     return directiveDefinitionObject;
 
 });
+
 
 
 

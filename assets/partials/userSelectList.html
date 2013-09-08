@@ -1,10 +1,25 @@
-  <div class="form-group">
-  	<label for="userName">Password</label>
-  	<select 
-  		ng-model="activeManifest.assigendUser"
-  		class="form-control"
-  		name="userName"
-  		ng-options="user.id as user.email for user in users">
-  		<!-- <option ng-repeat="">{{user | json}}</option> -->
-  	</select>
+  <!-- Single button -->
+  <div class="btn-group">
+    
+    <button ng-if="activeManifestUser" type="button" class="btn btn-default" >
+      <img src="{{activeManifestUser.picture}}" style="width:16px;height:16px;" alt=""> {{activeManifestUser.name.first}} {{activeManifestUser.name.last}} 
+    </button>
+    
+    <button ng-if="activeManifestUser" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <span class="caret"></span>
+    </button>
+
+  <button ng-if="!activeManifestUser" type="button" class="btn btn-default" >
+    Assign  this manifest to a user
+  </button>
+  
+  <button ng-if="!activeManifestUser" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+      <span class="caret"></span>
+  </button>
+
+     
+    <ul class="dropdown-menu pull-right" role="menu">
+
+      <li ng-repeat="user in users"><a href="#" ng-click="assignUser(user)"> <img src="{{user.picture}}" style="width:32px;height:32px;" alt=""> {{user.name.first}} {{user.name.last}}</a></li>
+    </ul>
   </div>

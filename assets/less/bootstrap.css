@@ -833,7 +833,7 @@ th.hidden-lg,td.hidden-lg{display:table-cell !important;}
 @media (min-width:1200px){.hidden-lg{display:none !important;}tr.hidden-lg{display:none !important;} th.hidden-lg,td.hidden-lg{display:none !important;}}
 .visible-print{display:none !important;}tr.visible-print{display:none !important;}
 th.visible-print,td.visible-print{display:none !important;}
-@media print{.visible-print{display:block !important;}tr.visible-print{display:table-row !important;} th.visible-print,td.visible-print{display:table-cell !important;} .hidden-print{display:none !important;}tr.hidden-print{display:none !important;} th.hidden-print,td.hidden-print{display:none !important;}}html,body,.my-fluid-container{height:100%;}html .adminMenuWrapper,body .adminMenuWrapper,.my-fluid-container .adminMenuWrapper{height:100%;min-height:100%;}
+@media print{.visible-print{display:block !important;}tr.visible-print{display:table-row !important;} th.visible-print,td.visible-print{display:table-cell !important;} .hidden-print{display:none !important;}tr.hidden-print{display:none !important;} th.hidden-print,td.hidden-print{display:none !important;}}html,body,.my-fluid-container{height:100%;min-height:100%;}html .adminMenuWrapper,body .adminMenuWrapper,.my-fluid-container .adminMenuWrapper{height:100%;min-height:100%;}
 body{background-color:#292A2F;}
 .my-fluid-container{margin-left:auto;margin-right:auto;}
 .manifestMenuWrapper,.mainTemplate{background:#f8f8f8;height:100%;min-height:100%;}
@@ -842,6 +842,7 @@ body{background-color:#292A2F;}
 .manifestMenuWrapper .list-group-item:hover,.manifestMenuWrapper .list-group-item.active{border-right:none;background-color:#eaeaed;color:#232323;}
 .manifestMenuWrapper .list-group-item .badge{background-color:#457b87;}
 .manifestMenuWrapper a.icon{color:#428bca;font-size:18px;}
+.user-menu{margin-right:10px;margin-top:10px;}
 .no-value{color:#ccc !important;font-style:italic;}
 .button-panel-group{height:40px;}.button-panel-group button{margin-top:5px;margin-right:5px;}
 .tab-content{padding-top:10px;border:1px solid #dddddd;margin-top:-1px;border-bottom:0px;}.tab-content .panel{border-radius:0px;border-left:0px;border-right:0px;}

@@ -29,7 +29,6 @@
 
 
 <div class="my-fluid-container">
- <div class="" ucm-importer-user-select-list>xx</div>xxxxx
 <!--     <div class="col-lg-12 header">
 
         <div><a>admin</a>/manifests</div>
@@ -51,65 +50,18 @@
         <!--</div>-->
     <!--</div>-->
 
-    <div class="col-lg-2 manifestMenuWrapper" ucm-manifests>
-            <div class="list-group">
+    <div class="col-lg-2 manifestMenuWrapper" ucm-manifest-manager></div>
 
-
-                <span class="list-group-item">
-
-                <span  class="dropdown pull-right">
-                    <a data-toggle="dropdown" href="#" class="icon icon-plus" ng-click="createNewForm()"></a>
-
-                    <a data-toggle="dropdown" href="#" class="icon icon-cog"></a>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="createNewForm()">Add new manifest</a></li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="toggleEditToggle()">Edit Manifest menu</a></li>
-
-                    </ul>
-                </span>
-
-
-
-
-
-                    Manifest
-                </span>
-
-
-
-
-
-
-                <a class="list-group-item"
-                   ng-repeat="manifest in manifests"
-                   ng-class="checkActive(manifest.id)"
-                   ng-click="loadManifest(manifest.id,$event)">
-
-                    <button type="button" ng-if="showEditButton()" class="btn btn-danger pull-right btn-xs"  ng-click="removeManifest(manifest.id)">Delete</button>
-                    <span ucm-manifest-document-count></span>
-                        <i ng-if="!manifest.name">untitled</i>{{manifest.name}}
-                </a>
-
-                <a class="list-group-item" ng-if="showEditButton()">
-                    <button type="button" ng-if="showEditButton()" class="btn btn-default pull-right btn-xs"  ng-click="toggleEditToggle()">Done</button>
-                    &nbsp
-                </a>
-
-
-
-            </div>
-
-
+    <div class="col-lg-10 mainTemplate">
+       
+       <div ng-include="mainTemplate"></div>
+       
+       <div ng-if="!mainTemplate">
+               <h1>Manifests</h1>
+               <p>Select a manifest from the left</p>
+        </div>
     </div>
 
-       <div class="col-lg-10 mainTemplate" ng-include="mainTemplate">
-            <h1>ssss</h1>
-       </div>
-
-    <div class="col-lg-10 mainTemplate" ng-if="!mainTemplate">
-        <h1>Manifests</h1>
-        <p>Select a manifest from the left</p>
-    </div>
 
 
 </div>

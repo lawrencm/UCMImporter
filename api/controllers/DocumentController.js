@@ -7,6 +7,8 @@
 
 var fs = require('fs');
 var exec = require('child_process').exec;
+var findit = require('findit');
+
 // var x = require('ucmImporter');
 // 
 // 
@@ -77,7 +79,7 @@ module.exports = {
                             //if no doc then create one
                             if (err || doc.length == 0) {
 
-                                Document.create({filePath: filePath, fileName: files[i], dirPath: dirPath}).done(function (err, doc) {
+                                Document.create({filePath: filePath, fileName: files[i], dirPath: dirPath, rules:{}}).done(function (err, doc) {
                                     //broadcast the creation of the new file
                                     var socket_msg = {type: "Document", id: doc.id, action: "created"};
                                     Document.publish(req, socket_msg);
@@ -177,7 +179,22 @@ module.exports = {
         });
     },
     test:function(req,res){
-        console.log(sails.config);
+//        file.walk("/Users/lawrencm/Desktop/test", function(a,b,c){
+//            console.log(b);
+//        });
+
+//        var fs = require('fs'),
+//            path = require('path')
+
+
+
+//        findit.find('/Users/lawrencm/Desktop/test', function (file) {
+//            //
+//            // This function is called each time a file is enumerated in the dir tree
+//            //
+//            console.log(file);
+//        });
+
         res.json({});
     }
 };
